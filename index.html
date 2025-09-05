@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Física Eléctrica • Carga, Fuerza, Campo y Potencial</title>
+  <meta name="description" content="Página interactiva para estudiar y practicar conceptos de física eléctrica: carga, fuerza eléctrica (Ley de Coulomb), campo eléctrico y potencial eléctrico." />
+  <!-- Tipografía y estilos base -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#0b1020;      /* fondo oscuro elegante */
+      --card:#121936;    /* tarjetas */
+      --ink:#eef2ff;     /* texto claro */
+      --muted:#aab3d0;   /* texto secundario */
+      --accent:#7c9eff;  /* acento */
+      --accent-2:#15d1c1;/* acento secundario */
+      --danger:#ff6b6b;
+      --ok:#2dd4bf;
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:radial-gradient(1200px 800px at 10% -10%, rgba(21,209,193,.15), transparent 40%),radial-gradient(900px 900px at 110% 20%, rgba(124,158,255,.12), transparent 40%), var(--bg);color:var(--ink);font:400 16px/1.6 "Inter",system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+    a{color:var(--accent)}
+    .wrap{max-width:1100px;margin:28px auto;padding:0 16px}
+    header{display:flex;align-items:center;gap:16px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:var(--shadow)}
+    h1{font-size:clamp(22px,2.8vw,34px);margin:0}
+    .subtitle{color:var(--muted);margin-top:4px}
+
+    .tabs{display:flex;gap:10px;margin:22px 0 14px;flex-wrap:wrap}
+    .tab{padding:10px 14px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);backdrop-filter: blur(6px);border-radius:999px;color:var(--ink);cursor:pointer;transition:.25s ease;}
+    .tab[aria-selected="true"], .tab:hover{background:linear-gradient(135deg,rgba(124,158,255,.25),rgba(21,209,193,.2));border-color:rgba(255,255,255,.18)}
+
+    .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+    @media (max-width: 900px){.grid{grid-template-columns:1fr}}
+
+    .card{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card .hd{padding:18px 18px 6px}
+    .card .bd{padding:0 18px 18px}
+    .card h2{margin:0 0 6px;font-size:clamp(18px,2.2vw,24px)}
+    .kicker{font-size:12px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+
+    .formula{background:linear-gradient(135deg,rgba(21,209,193,.10),rgba(124,158,255,.10));border:1px dashed rgba(255,255,255,.15);border-radius:14px;padding:14px;margin:12px 0}
+
+    .inputs{display:grid;grid-template-columns:1fr 130px;gap:10px}
+    .row{display:grid;grid-template-columns:1fr 110px 110px;gap:8px;align-items:end}
+    @media (max-width: 520px){.row{grid-template-columns:1fr 1fr;}}
+    label{font-weight:600;font-size:14px}
+    input, select, button, textarea{width:100%;padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(10,14,36,.6);color:var(--ink)}
+    input::placeholder{color:#8fa0d9}
+    textarea{min-height:88px;resize:vertical}
+
+    .btn{cursor:pointer;transition:.2s ease;border:none}
+    .btn.primary{background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#05121a; font-weight:800}
+    .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,.16)}
+
+    .result{padding:14px;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.08);border-radius:12px;white-space:pre-wrap}
+    .badge{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(21,209,193,.15);border:1px solid rgba(21,209,193,.35);font-size:12px;font-weight:700;color:#9ff1e8}
+
+    footer{color:var(--muted);text-align:center;margin:26px 0}
+    .help{font-size:14px;color:var(--muted)}
+    .tips{display:flex;gap:8px;flex-wrap:wrap}
+    .tip{background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.18);padding:8px 10px;border-radius:12px;font-size:13px}
+  </style>
+  <!-- MathJax para renderizar fórmulas -->
+  <script>
+    window.MathJax = { tex: {inlineMath: [["$","$"],["\\(","\\)"]] }, svg: {fontCache: 'global'} };
+  </script>
+  <script async id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand"><div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Física Eléctrica: Carga, Fuerza, Campo y Potencial</h1>
+          <div class="subtitle">Calculadoras interactivas + fórmulas + pasos de solución</div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist" aria-label="Temas">
+      <button class="tab" role="tab" aria-selected="true" data-panel="tab-carga">Carga</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="tab-fuerza">Fuerza (Ley de Coulomb)</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="tab-campo">Campo eléctrico</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="tab-potencial">Potencial eléctrico</button>
+    </nav>
+
+    <!-- ====== PANEL: CARGA ====== -->
+    <section id="tab-carga" class="panel" aria-labelledby="Carga">
+      <div class="grid">
+        <article class="card">
+          <div class="hd">
+            <span class="kicker">Concepto & Fórmula</span>
+            <h2>Carga eléctrica ($q$)</h2>
+          </div>
+          <div class="bd">
+            <p>La <strong>carga eléctrica</strong> es una propiedad de la materia asociada a las interacciones eléctricas. Se mide en <em>Culombios (C)</em> y está <em>cuantizada</em>: $q = n\,e$, donde $e = 1.602\times10^{-19}\,\text{C}$.</p>
+            <div class="formula">$q = n\,e$ &nbsp;&nbsp;|&nbsp; $e = 1.602\,176\,634\times10^{-19}\,\text{C}$</div>
+            <div class="tips">
+              <div class="tip">Signos: $q>0$ (positivo), $q<0$ (negativo).</div>
+              <div class="tip">Unidades comunes: nC, $\mu$C, mC. 1 nC = $10^{-9}$ C.</div>
+            </div>
+          </div>
+        </article>
+        <article class="card">
+          <div class="hd"><span class="kicker">Práctica</span><h2>Conversor y cuantización</h2></div>
+          <div class="bd">
+            <div class="row">
+              <div>
+                <label for="qVal">Valor de carga</label>
+                <input id="qVal" type="number" step="any" placeholder="Ej: 2.5" />
+              </div>
+              <div>
+                <label for="qUnit">Unidad</label>
+                <select id="qUnit">
+                  <option value="1">C</option>
+                  <option value="1e-3">mC</option>
+                  <option value="1e-6">µC</option>
+                  <option value="1e-9">nC</option>
+                  <option value="1e-12">pC</option>
+                </select>
+              </div>
+              <button class="btn primary" onclick="calcCarga()">Calcular</button>
+            </div>
+            <div style="height:10px"></div>
+            <div class="result" id="qOut" aria-live="polite">Ingresa un valor y unidad para convertir a Coulomb y estimar número de electrones/protones equivalentes.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====== PANEL: FUERZA ====== -->
+    <section id="tab-fuerza" class="panel" hidden>
+      <div class="grid">
+        <article class="card">
+          <div class="hd">
+            <span class="kicker">Concepto & Fórmula</span>
+            <h2>Fuerza eléctrica entre dos cargas</h2>
+          </div>
+          <div class="bd">
+            <p>La <strong>Ley de Coulomb</strong> establece que la magnitud de la fuerza entre dos cargas puntuales es:</p>
+            <div class="formula">$F = k\,\dfrac{|q_1 q_2|}{r^2}$, &nbsp; con $k = \dfrac{1}{4\pi\varepsilon_0} \approx 8.9875\times10^{9} \, \text{N·m}^2/\text{C}^2$.</div>
+            <p>La dirección es a lo largo de la línea que une las cargas. <span class="badge">Signo</span>: cargas <em>iguales</em> (repulsión), <em>opuestas</em> (atracción).</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="hd"><span class="kicker">Práctica</span><h2>Calculadora de Fuerza (Coulomb)</h2></div>
+          <div class="bd">
+            <div class="row">
+              <div>
+                <label>q₁</label>
+                <input id="f_q1" type="number" step="any" placeholder="Ej: 2" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="f_q1u"><option value="1">C</option><option value="1e-3">mC</option><option value="1e-6">µC</option><option value="1e-9">nC</option></select>
+              </div>
+              <div>
+                <label>Signo</label>
+                <select id="f_s1"><option value="+">+</option><option value="-">-</option></select>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>q₂</label>
+                <input id="f_q2" type="number" step="any" placeholder="Ej: 3" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="f_q2u"><option value="1">C</option><option value="1e-3">mC</option><option value="1e-6">µC</option><option value="1e-9">nC</option></select>
+              </div>
+              <div>
+                <label>Signo</label>
+                <select id="f_s2"><option value="+">+</option><option value="-">-</option></select>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Distancia r</label>
+                <input id="f_r" type="number" step="any" placeholder="Ej: 0.25" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="f_ru"><option value="1">m</option><option value="1e-2">cm</option><option value="1e-3">mm</option></select>
+              </div>
+              <button class="btn primary" onclick="calcFuerza()">Calcular F</button>
+            </div>
+            <div style="height:10px"></div>
+            <div class="result" id="fOut" aria-live="polite">Ingresa datos de q₁, q₂ y r para obtener $F$ con pasos.</div>
+            <div class="help">Ejemplo rápido: q₁ = +2 µC, q₂ = −3 µC, r = 5 cm → atracción.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====== PANEL: CAMPO ====== -->
+    <section id="tab-campo" class="panel" hidden>
+      <div class="grid">
+        <article class="card">
+          <div class="hd">
+            <span class="kicker">Concepto & Fórmula</span>
+            <h2>Campo eléctrico de una carga puntual</h2>
+          </div>
+          <div class="bd">
+            <p>El <strong>campo eléctrico</strong> es la fuerza por unidad de carga de prueba:</p>
+            <div class="formula">$\vec{E} = k\,\dfrac{q}{r^2}\,\hat{r}$ &nbsp; (magnitud $E = k\,\dfrac{|q|}{r^2}$). Unidad: N/C o V/m.</div>
+            <p>Dirección: sale de cargas positivas y entra a negativas.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="hd"><span class="kicker">Práctica</span><h2>Calculadora de Campo</h2></div>
+          <div class="bd">
+            <div class="row">
+              <div>
+                <label>q</label>
+                <input id="E_q" type="number" step="any" placeholder="Ej: 4" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="E_qu"><option value="1">C</option><option value="1e-3">mC</option><option value="1e-6">µC</option><option value="1e-9">nC</option></select>
+              </div>
+              <div>
+                <label>Signo</label>
+                <select id="E_s"><option value="+">+</option><option value="-">-</option></select>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Distancia r</label>
+                <input id="E_r" type="number" step="any" placeholder="Ej: 0.12" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="E_ru"><option value="1">m</option><option value="1e-2">cm</option><option value="1e-3">mm</option></select>
+              </div>
+              <button class="btn primary" onclick="calcCampo()">Calcular E</button>
+            </div>
+            <div style="height:10px"></div>
+            <div class="result" id="EOut" aria-live="polite">Ingresa q y r para obtener $E$ con pasos.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ====== PANEL: POTENCIAL ====== -->
+    <section id="tab-potencial" class="panel" hidden>
+      <div class="grid">
+        <article class="card">
+          <div class="hd">
+            <span class="kicker">Concepto & Fórmula</span>
+            <h2>Potencial eléctrico de una carga puntual</h2>
+          </div>
+          <div class="bd">
+            <p>El <strong>potencial eléctrico</strong> en un punto a una distancia $r$ de una carga puntual $q$ es:</p>
+            <div class="formula">$V = k\,\dfrac{q}{r}$ &nbsp; (unidad: volt, V).</div>
+            <p>El signo de $V$ depende del signo de $q$.</p>
+          </div>
+        </article>
+        <article class="card">
+          <div class="hd"><span class="kicker">Práctica</span><h2>Calculadora de Potencial</h2></div>
+          <div class="bd">
+            <div class="row">
+              <div>
+                <label>q</label>
+                <input id="V_q" type="number" step="any" placeholder="Ej: 6" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="V_qu"><option value="1">C</option><option value="1e-3">mC</option><option value="1e-6">µC</option><option value="1e-9">nC</option></select>
+              </div>
+              <div>
+                <label>Signo</label>
+                <select id="V_s"><option value="+">+</option><option value="-">-</option></select>
+              </div>
+            </div>
+            <div class="row">
+              <div>
+                <label>Distancia r</label>
+                <input id="V_r" type="number" step="any" placeholder="Ej: 0.08" />
+              </div>
+              <div>
+                <label>Unidad</label>
+                <select id="V_ru"><option value="1">m</option><option value="1e-2">cm</option><option value="1e-3">mm</option></select>
+              </div>
+              <button class="btn primary" onclick="calcPotencial()">Calcular V</button>
+            </div>
+            <div style="height:10px"></div>
+            <div class="result" id="VOut" aria-live="polite">Ingresa q y r para obtener $V$ con pasos.</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <p>Constantes: $k = 8.9875517923\times10^{9}\,\text{N·m}^2/\text{C}^2$, &nbsp; $e = 1.602176634\times10^{-19}\,\text{C}$.</p>
+      <p class="help">Consejo: trabaja SIEMPRE en unidades SI (C, m) y usa prefijos (mC, µC, nC) con el selector. Puedes copiar el desarrollo de pasos para tus reportes.</p>
+    </footer>
+  </div>
+
+  <script>
+    const K = 8.9875517923e9; // N·m^2/C^2
+    const e = 1.602176634e-19; // C
+
+    // Utilidades -----------------
+    const fmt = (x, digits=4) => {
+      if (!isFinite(x)) return '—';
+      const ax = Math.abs(x);
+      if (ax !== 0 && (ax < 1e-3 || ax >= 1e4)) return x.toExponential(digits);
+      return x.toFixed(digits);
+    };
+    function unitValue(valId, unitId, signId){
+      const v = parseFloat(document.getElementById(valId).value);
+      const u = parseFloat(document.getElementById(unitId).value);
+      if (isNaN(v)) return null;
+      let sign = 1;
+      if (signId){
+        sign = (document.getElementById(signId).value === '-') ? -1 : 1;
+      }
+      return sign * v * u;
+    }
+    function lengthValue(valId, unitId){
+      const v = parseFloat(document.getElementById(valId).value);
+      const u = parseFloat(document.getElementById(unitId).value);
+      if (isNaN(v)) return null;
+      return v * u; // metros
+    }
+
+    // Tabs -----------------------
+    const tabs = document.querySelectorAll('.tab');
+    const panels = document.querySelectorAll('.panel');
+    tabs.forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        tabs.forEach(b=>b.setAttribute('aria-selected','false'));
+        panels.forEach(p=>p.hidden=true);
+        btn.setAttribute('aria-selected','true');
+        document.getElementById(btn.dataset.panel).hidden=false;
+        // Reinicia render de MathJax por si el usuario navega
+        if (window.MathJax && MathJax.typeset) MathJax.typeset();
+      });
+    });
+
+    // CARGA ----------------------
+    function calcCarga(){
+      const q = unitValue('qVal','qUnit');
+      const out = document.getElementById('qOut');
+      if (q===null){ out.textContent='Por favor ingresa un número válido.'; return; }
+      const n = q / e; // cantidad de cargas elementales
+      const sign = q>0?'+':'q=0 o negativo';
+
+      const pasos = [
+        `1) Conversión a Coulomb: q = ${fmt(q)} C`,
+        `2) Cuantización: n = q/e = ${fmt(q)} / ${e.toExponential(4)} = ${fmt(n,3)} partículas elementales (aprox.)`,
+        `Nota: si q>0 ⇢ exceso de protones; si q<0 ⇢ exceso de electrones.`
+      ].join('\n');
+
+      out.textContent = pasos;
+    }
+
+    // FUERZA ---------------------
+    function calcFuerza(){
+      const q1 = unitValue('f_q1','f_q1u','f_s1');
+      const q2 = unitValue('f_q2','f_q2u','f_s2');
+      const r  = lengthValue('f_r','f_ru');
+      const out = document.getElementById('fOut');
+      if (q1===null || q2===null || r===null || r===0){ out.textContent='Revisa q₁, q₂ y r (r>0).'; return; }
+      const signDesc = (q1*q2>0) ? 'repulsiva (se alejan)' : (q1*q2<0) ? 'atractiva (se acercan)' : 'nula (alguna carga es 0)';
+      const F = K * Math.abs(q1*q2) / (r*r);
+      const pasos = [
+        `Datos en SI: q₁ = ${fmt(q1)} C, q₂ = ${fmt(q2)} C, r = ${fmt(r)} m`,
+        `Fórmula: F = k |q₁ q₂| / r²`,
+        `Sustitución: F = (${K.toExponential(4)}) * |${fmt(q1)} * ${fmt(q2)}| / (${fmt(r)}²)`,
+        `Cálculo: F = ${fmt(F)} N`,
+        `Dirección: a lo largo de la línea que une las cargas; naturaleza ${signDesc}.`
+      ].join('\n');
+      out.textContent = pasos;
+    }
+
+    // CAMPO ----------------------
+    function calcCampo(){
+      const q = unitValue('E_q','E_qu','E_s');
+      const r = lengthValue('E_r','E_ru');
+      const out = document.getElementById('EOut');
+      if (q===null || r===null || r===0){ out.textContent='Revisa q y r (r>0).'; return; }
+      const E = K * Math.abs(q) / (r*r);
+      const dir = (q>0)? 'sale de la carga (radial hacia afuera)' : (q<0)? 'entra a la carga (radial hacia adentro)' : 'indefinida para q=0';
+      const pasos = [
+        `Datos en SI: q = ${fmt(q)} C, r = ${fmt(r)} m`,
+        `Fórmula: E = k |q| / r²`,
+        `Sustitución: E = (${K.toExponential(4)}) * |${fmt(q)}| / (${fmt(r)}²)`,
+        `Cálculo: E = ${fmt(E)} N/C (V/m)`,
+        `Dirección: ${dir}.`
+      ].join('\n');
+      out.textContent = pasos;
+    }
+
+    // POTENCIAL ------------------
+    function calcPotencial(){
+      const q = unitValue('V_q','V_qu','V_s');
+      const r = lengthValue('V_r','V_ru');
+      const out = document.getElementById('VOut');
+      if (q===null || r===null || r===0){ out.textContent='Revisa q y r (r>0).'; return; }
+      const V = K * (q) / r; // conserva signo
+      const pasos = [
+        `Datos en SI: q = ${fmt(q)} C, r = ${fmt(r)} m`,
+        `Fórmula: V = k q / r`,
+        `Sustitución: V = (${K.toExponential(4)}) * (${fmt(q)}) / (${fmt(r)})`,
+        `Cálculo: V = ${fmt(V)} V (signo según q).`
+      ].join('\n');
+      out.textContent = pasos;
+    }
+
+    // Accesibilidad: enter ejecuta el cálculo más cercano
+    document.addEventListener('keydown', (e)=>{
+      if (e.key !== 'Enter') return;
+      const el = e.target;
+      if (el.closest('#tab-carga')) calcCarga();
+      if (el.closest('#tab-fuerza')) calcFuerza();
+      if (el.closest('#tab-campo')) calcCampo();
+      if (el.closest('#tab-potencial')) calcPotencial();
+    });
+  </script>
+</body>
+</html>
